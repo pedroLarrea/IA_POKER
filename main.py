@@ -1,12 +1,3 @@
-from mazo import Mazo
-from carta import Carta
-from jugador import Jugador
+from mesa import Mesa
 
-mazo = Mazo()
-
-mazoOriginal = list(mazo.obtenerMazo())
-
-bot = Jugador([mazo.obtenerCarta(), mazo.obtenerCarta()], mazoOriginal)
-# bot.verMano()
-bot.calcularCombinacion([mazo.obtenerCarta(), mazo.obtenerCarta(), mazo.obtenerCarta()])
-# bot.manoActual()
+juego = Mesa(False,100.0,8)
