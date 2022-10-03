@@ -7,6 +7,8 @@ class Jugador:
     def __init__(self,cartas,mazo):
         self.mano = cartas
         self.restante = mazo
+        self.restante.remove(self.mano[0])
+        self.restante.remove(self.mano[1])
 
     # Imprimimos nuestra mano actual
     def verMano(self):
@@ -22,6 +24,7 @@ class Jugador:
         
         # Ordenamos las cartas que tenemos
         self.ordenarMano()
+
         for c in self.cartas:
             c.imprimir()
 
@@ -41,76 +44,91 @@ class Jugador:
             }
         
         # Carta Alta
-        manos['Carta Alta'] = [[self.cartas[0]]]
+        self.manos['Carta Alta'] = [[self.cartas[0]]]
         
-        # Las demas manos
+        # Las demas self.manos
         for i in range(0, len(self.cartas) - 1, 1):
             
             par = None
             trio = None
             poker = None
             color = [self.cartas[i]]
+            escalera = [self.cartas[i]]
             
             for j in range(i+1, len(self.cartas), 1):
+
+                # Para verificar si existe una escalera
+                # Casos a verificar, cuando cuando hay una escalera del tipo 5,4,3,2,A (La A esta al comienzo, no al final)
+                # Casos a verificar, Cuando los valores se repiten A, K, K, Q, J, 10, 10 (Una k y un 10 se van a ignorar pudiendose perder escaleras de color)
+                if self.cartas[j].valor == ( escalera[-1].valor - 1 ):
+                    escalera.append(self.cartas[j])
+                if len(escalera) == 5 and self.manos['Escalera'] == [[]]:
+                    self.manos['Escalera'] = [escalera]
                 
                 # Para verificar si existe un color
                 if self.cartas[j].palo == self.cartas[i].palo and len(color) < 5:
                     color.append(self.cartas[j])
-                if len(color) == 5 and manos['Color'] == [[]]:
-                    manos['Color'] = [color]
-                    color = None
+                if len(color) == 5 and self.manos['Color'] == [[]]:
+                    self.manos['Color'] = [color]
                     
                 # Para verificar si existe un poker
                 if self.cartas[j].valor == self.cartas[i].valor and trio is not None :
                     poker = trio + [self.cartas[j]]
-                    if manos['Poker'] == [[]]:
-                        manos['Poker'] = [poker]
+                    if self.manos['Poker'] == [[]]:
+                        self.manos['Poker'] = [poker]
                     else:
-                        manos['Poker'].append(poker)
+                        self.manos['Poker'].append(poker)
                 
                 # Para verificar si existe un trio
                 if self.cartas[j].valor == self.cartas[i].valor and par is not None :
                     trio = par + [self.cartas[j]]
-                    if manos['Trio'] == [[]]:
-                        manos['Trio'] = [trio]
+                    if self.manos['Trio'] == [[]]:
+                        self.manos['Trio'] = [trio]
                     else:
-                        manos['Trio'].append(trio)
+                        self.manos['Trio'].append(trio)
                 
                 # Para verificar si existe pareja
                 if self.cartas[j].valor == self.cartas[i].valor and par is None:
                     par = [self.cartas[i],self.cartas[j]]
-                    if manos['Par'] == [[]]:
-                        manos['Par'] = [par]
+                    if self.manos['Par'] == [[]]:
+                        self.manos['Par'] = [par]
                     else:
-                        manos['Par'].append(par)
+                        self.manos['Par'].append(par)
                 
         # Para verificar existencia de doble pareja
-        if manos['Par'] != [[]]:
-            for i in range(0, len(manos['Par'])-1, 1):
-                for j in range(i+1, len(manos['Par']), 1):
-                    if manos['Par'][i][0].valor != manos['Par'][j][0].valor:
-                        doblePareja = manos['Par'][i] + manos['Par'][j]
-                        if manos['Doble Pareja'] == [[]]:
-                            manos['Doble Pareja'] = [doblePareja]
+        if self.manos['Par'] != [[]]:
+            for i in range(0, len(self.manos['Par'])-1, 1):
+                for j in range(i+1, len(self.manos['Par']), 1):
+                    if self.manos['Par'][i][0].valor != self.manos['Par'][j][0].valor:
+                        doblePareja = self.manos['Par'][i] + self.manos['Par'][j]
+                        if self.manos['Doble Pareja'] == [[]]:
+                            self.manos['Doble Pareja'] = [doblePareja]
                         else:
-                            manos['Doble Pareja'].append(doblePareja)
+                            self.manos['Doble Pareja'].append(doblePareja)
         
         # Para verificar existencia de un full
-        if manos['Par'] != [[]] and manos['Trio'] != [[]]:
-            for i in range(0, len(manos['Par']), 1):
-                for j in range(0, len(manos['Trio']), 1):
-                    if manos['Par'][i][0].valor != manos['Trio'][j][0].valor:
-                        full = manos['Par'][i] + manos['Trio'][j]
-                        if manos['Full'] == [[]]:
-                            manos['Full'] = [full]
+        if self.manos['Par'] != [[]] and self.manos['Trio'] != [[]]:
+            for i in range(0, len(self.manos['Par']), 1):
+                for j in range(0, len(self.manos['Trio']), 1):
+                    if self.manos['Par'][i][0].valor != self.manos['Trio'][j][0].valor:
+                        full = self.manos['Par'][i] + self.manos['Trio'][j]
+                        if self.manos['Full'] == [[]]:
+                            self.manos['Full'] = [full]
                         else:
-                            manos['Full'].append(full)
+                            self.manos['Full'].append(full)
         
-        self.imprimirManosObtenidas(manos)
+        # Para verificar existencia de una escalera de color
+        if self.manos['Escalera'] != [[]]:
+            for escalera in self.manos['Escalera']:
+                if escalera[0].palo == escalera[1].palo == escalera[3].palo == escalera[4].palo == escalera[5].palo:
+                    if self.manos['Escalera de Color'] == [[]]:
+                            self.manos['Escalera de Color'] = [escalera]
+                    else:
+                            self.manos['Escalera de Color'].append(escalera)
+        
+        self.imprimirManosObtenidas()
         
         
-
-
     # Calculamos cual es nuestra mejor posibilidad de ganar actualmente
     def calcularProbabilidad(self):
 
@@ -138,11 +156,17 @@ class Jugador:
                     self.cartas[j] = aux
 
     
-    def imprimirManosObtenidas(self,manos):
-        for nombreMano, mano in manos.items():
+    def imprimirManosObtenidas(self):
+        for nombreMano, mano in self.manos.items():
             print("===",nombreMano,"===")
             for i in mano:
                 Carta.imprimirLista(i)
     
+    def manoActual(self):
+        for nombreMano, mano in self.manos.items():
+            if mano != [[]]:
+                print(nombreMano,":")
+                Carta.imprimirLista(mano[0])
+                break
     
     
