@@ -28,6 +28,7 @@ class Jugador:
         # Calcular Poker, Full, Color, Trio, Doble Pareja, Pareja, Carta Alta
         # Se almacena nombre_de_la_mano : [arreglo_con_cartas]
         manos = {
+            'Escalera real' : [[]],
             'Escalera de Color' : [[]],
             'Poker' : [[]],
             'Full' : [[]],
