@@ -25,9 +25,6 @@ class Jugador:
         # Ordenamos las cartas que tenemos
         self.ordenarMano()
 
-        for c in self.cartas:
-            c.imprimir()
-
         # Calcular Poker, Full, Color, Trio, Doble Pareja, Pareja, Carta Alta
         # Se almacena nombre_de_la_mano : [arreglo_con_cartas]
         self.manos = {
@@ -125,7 +122,14 @@ class Jugador:
                     else:
                             self.manos['Escalera de Color'].append(escalera)
         
-        self.imprimirManosObtenidas()
+        # self.imprimirManosObtenidas()
+
+        # retornar la mejor combinacion
+       
+        for nombreMano, mano in self.manos.items():
+            for i in mano:
+                if mano != [[]]:
+                    return [nombreMano,mano[0]]
         
         
     # Calculamos cual es nuestra mejor posibilidad de ganar actualmente
