@@ -30,10 +30,10 @@ class Mesa:
             self.mazoOriginal = list(self.mazo.obtenerMazo())
 
             # Creamos los jugadores y repartimos cartas
-            jugador1 = Jugador([self.mazo.obtenerCarta(), self.mazo.obtenerCarta()], self.mazoOriginal)
-            jugador2 = Jugador([self.mazo.obtenerCarta(), self.mazo.obtenerCarta()], self.mazoOriginal)
+            jugador1 = Jugador([self.mazo.obtenerCarta(), self.mazo.obtenerCarta()], list(self.mazoOriginal))
+            jugador2 = Jugador([self.mazo.obtenerCarta(), self.mazo.obtenerCarta()], list(self.mazoOriginal))
             self.jugadores = [jugador1,jugador2]
-
+            
             # Cartas sobre la mesa
             self.mesa = []
             
@@ -50,9 +50,7 @@ class Mesa:
             self.river()
 
             # verificar quien gano la ronda
-            self.verificarGanador()
-
-        
+            self.verificarGanador()        
 
     # momento del juego cuando aun no hay ninguna carta sobre la mesa        
     def preflop(self):

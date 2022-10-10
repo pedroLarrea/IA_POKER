@@ -16,10 +16,10 @@ class Jugador:
             m.imprimir()
 
     # Recibimos la lista de cartas sobre la mesa y calculamos cual es la mejor combinacion de cartas
-    def calcularCombinacion(self, mesa):
+    def calcularCombinacion(self, mesa, mano):
         
         # unimos las cartas de nuestra mano con los que hay en la mesa en una sola lista
-        self.cartas = self.mano + mesa
+        self.cartas = mano + mesa
         # self.cartas.sort(key = lambda x: x.valor, reverse=True)
         
         # Ordenamos las cartas que tenemos
@@ -116,7 +116,7 @@ class Jugador:
         # Para verificar existencia de una escalera de color
         if self.manos['Escalera'] != [[]]:
             for escalera in self.manos['Escalera']:
-                if escalera[0].palo == escalera[1].palo == escalera[3].palo == escalera[4].palo == escalera[5].palo:
+                if escalera[0].palo == escalera[1].palo == escalera[2].palo == escalera[3].palo == escalera[4].palo:
                     if self.manos['Escalera de Color'] == [[]]:
                             self.manos['Escalera de Color'] = [escalera]
                     else:
@@ -130,19 +130,105 @@ class Jugador:
             for i in mano:
                 if mano != [[]]:
                     return [nombreMano,mano[0]]
-        
-        
+              
     # Calculamos cual es nuestra mejor posibilidad de ganar actualmente
-    def calcularProbabilidad(self):
+    def calcularProbabilidad(self,mesa):
+
+        manosValor = {
+                'Escalera de Color' : 9,
+                'Poker' : 8,
+                'Full' : 7,
+                'Color' : 6,
+                'Escalera' : 5,
+                'Trio' : 4,
+                'Doble Pareja' : 3,
+                'Par' : 2,
+                'Carta Alta' : 1
+                }
+
+        contadorGanado = 0
+        contadorTotal = 0
+        
+        # Remover las cartas de la mesa del mazo
+        for carta in mesa:
+            if carta in self.restante:
+                self.restante.remove(carta)
+
+
+        print("Ejecutando calcularProbabilidad...")
+        print("len(mesa):",len(mesa))
+        print("len(self.restante):",len(self.restante))
 
         # Calculamos todas las posbiles manos del rival
         for i in range(0, len(self.restante) - 1, 1):
             for j in range(i + 1, len(self.restante), 1):
                 
-                self.restante[i].imprimir()
-                self.restante[j].imprimir()
+                PCartaRival1 = self.restante[i]
+                PCartaRival2 = self.restante[j]
 
-                
+                # Quitar las 2 cartas elegidas para el rival del mazo
+                self.restante.remove(PCartaRival1)
+                self.restante.remove(PCartaRival2)
+
+                # Condicion cuando conocomos 0 cartas de la mesa
+                if mesa == []:
+                    for a in range(0,len(self.restante)-4,1):
+                        for b in range (a+1,len(self.restante)-3,1):
+                            for c in range (b+1,len(self.restante)-2,1):
+                                for d in range (c+1,len(self.restante)-1,1):
+                                    for e in range (d+1,len(self.restante),1):
+                                        # Calculamos la combinacion de cartas del rival
+                                        Cconocidas = [self.restante[a],self.restante[b],self.restante[c],self.restante[d],self.restante[e]]
+                                        manoRival = self.calcularCombinacion(Cconocidas,[PCartaRival1,PCartaRival2])
+                                        manoMia = self.calcularCombinacion(Cconocidas,self.mano)
+                                        contadorTotal = contadorTotal + 1
+                                        # caso en el que jugador 1 tiene mejor mano que jugador 2
+                                        if manosValor[manoMia[0]] > manosValor[manoRival[0]]:
+                                            contadorGanado = contadorGanado + 1
+                                            
+                # Condicion cuando conocomos 3 cartas de la mesa
+                if len(mesa) == 3:
+                    for a in range(0,len(self.restante)-1,1):
+                        for b in range (a+1,len(self.restante),1):
+                            # Calculamos la combinacion de cartas del rival
+                            Cconocidas = mesa + [self.restante[a],self.restante[b]]
+                            manoRival = self.calcularCombinacion(Cconocidas,[PCartaRival1,PCartaRival2])
+                            manoMia = self.calcularCombinacion(Cconocidas,self.mano)
+                            contadorTotal = contadorTotal + 1
+                            # caso en el que jugador 1 tiene mejor mano que jugador 2
+                            if manosValor[manoMia[0]] > manosValor[manoRival[0]]:
+                                contadorGanado = contadorGanado + 1
+
+                # Condicion cuando conocomos 4 cartas de la mesa
+                if len(mesa) == 4:
+                    for a in range(0,len(self.restante),1):
+                        # Calculamos la combinacion de cartas del rival
+                        Cconocidas = mesa + [self.restante[a]]
+                        manoRival = self.calcularCombinacion(Cconocidas,[PCartaRival1,PCartaRival2])
+                        manoMia = self.calcularCombinacion(Cconocidas,self.mano)
+                        contadorTotal = contadorTotal + 1
+                        # caso en el que jugador 1 tiene mejor mano que jugador 2
+                        if manosValor[manoMia[0]] > manosValor[manoRival[0]]:
+                            contadorGanado = contadorGanado + 1
+
+                # Condicion cuando conocomos 5 cartas de la mesa
+                if len(mesa) == 5:
+                    # Calculamos la combinacion de cartas del rival
+                    Cconocidas = mesa
+                    manoRival = self.calcularCombinacion(Cconocidas,[PCartaRival1,PCartaRival2])
+                    manoMia = self.calcularCombinacion(Cconocidas,self.mano)
+                    contadorTotal = contadorTotal + 1
+                    # caso en el que jugador 1 tiene mejor mano que jugador 2
+                    if manosValor[manoMia[0]] > manosValor[manoRival[0]]:
+                        contadorGanado = contadorGanado + 1
+
+                # Poner las 2 cartas elegidas para el rival de nuevo al mazo
+                self.restante.insert(i,PCartaRival1)
+                self.restante.insert(j,PCartaRival2)
+
+        print("Casos totales :",contadorTotal)
+        print("Casos ganadores :",contadorGanado)
+        print("Probabilidad de ganar con esta mano (",contadorGanado,"/",contadorTotal,"):",contadorGanado/contadorTotal)
 
     # Ordenar las cartas para que sea mas facil determinar las manos
     def ordenarMano(self):
@@ -157,8 +243,7 @@ class Jugador:
                     aux = self.cartas[i]
                     self.cartas[i] = self.cartas[j]
                     self.cartas[j] = aux
-
-    
+  
     def imprimirManosObtenidas(self):
         for nombreMano, mano in self.manos.items():
             print("===",nombreMano,"===")
