@@ -271,12 +271,12 @@ class Mesa:
     def verificarGanador(self):
         if self.apuestas[0] > 0 and self.apuestas[1] > 0:
             print("Mejor mano de jugador 1")
-            manoFinalJ1 = self.jugadores[0].calcularCombinacion(self.mesa)
+            manoFinalJ1 = self.jugadores[0].calcularCombinacion(self.mesa,self.jugadores[0].retornarMano())
             print(manoFinalJ1[0])
             Carta.imprimirLista(manoFinalJ1[1])
 
             print("Mejor mano de jugador 2 o usuario")
-            manoFinalJ2 = self.jugadores[1].calcularCombinacion(self.mesa)
+            manoFinalJ2 = self.jugadores[1].calcularCombinacion(self.mesa,self.jugadores[1].retornarMano())
             print(manoFinalJ2[0])
             Carta.imprimirLista(manoFinalJ2[1])
 
