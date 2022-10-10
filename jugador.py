@@ -28,7 +28,11 @@ class Jugador:
         # Ordenamos las cartas que tenemos
         self.ordenarMano()
         
-
+        #agregamos las A al final de la mano...
+        contador=0
+        while self.cartas[contador].valor==14:
+            self.cartas.append(Carta(1, self.cartas[contador].palo))
+            contador+=1
 
         for c in self.cartas:
             c.imprimir()
@@ -52,8 +56,19 @@ class Jugador:
 
         # para escaleras exclusivo-------------------------------------------------------------------------------------------
         # utilizo numeros binarios, los 2 declarados abajo son el limite inferior y superior desde donde controlar, si es 1 se guarda la posicion y que sean de longitud 5
-        binarioString1 = '0011111'
-        binarioString2 = '1111111'
+        
+        
+        
+        binarioString1 = '11111'    #despues se ve cuantos 0 se le agrega
+        binarioString2 = ''         #despues se ve cuantos 1 son en total
+        
+        
+        binarioString1 =binarioString1.zfill(len(self.cartas)) #agrega tantos 0's como falten
+        for i in range(0, len(self.cartas), 1):
+            binarioString2=binarioString2+'1'
+            
+        print("limite inf y sup: ", binarioString1, " ",binarioString2)
+        
 
         #paso int de la cadena
         binarioInt1 = int(binarioString1, 2)
@@ -123,7 +138,11 @@ class Jugador:
                     print('ENCONTRE ESCALERA')
                     self.manos['Escalera'].append(esc)                  
                                   
-
+        #quito las A's que agregue al final
+        contador=0
+        while self.cartas[contador].valor==14:
+            self.cartas.pop()
+            contador+=1
             
 
        # -----------------------------------------------------------------------------------------------------------------------

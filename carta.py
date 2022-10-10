@@ -17,6 +17,7 @@ class Carta:
         11: "J",
         12: "Q",
         13: "K",
+        1: "A"
     }
 
     def __init__(self, valor, palo):
