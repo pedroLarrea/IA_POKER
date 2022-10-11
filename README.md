@@ -13,3 +13,5 @@ reglas(apuesta alta, menor (empieza apostando el menor)))
 5 - Crear juego (interfaz basico)
 
 6 - GUI¿?
+
+Nota: instalar PIL comando: pip install Pillow
