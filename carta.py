@@ -24,6 +24,15 @@ class Carta:
     def imprimir(self):
         print(self.valores[self.valor], "-", self.palo)
 
+    def returnValor(self):
+        return self.valores[self.valor]
+    
+    def returnTrueValor(self):
+        return self.valor
+    
+    def returnPalo(self):
+        return self.palo
+
     def imprimirLista(listaCartas):
         if listaCartas != []:
             for c in listaCartas:

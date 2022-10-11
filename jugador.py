@@ -1,5 +1,6 @@
 from operator import attrgetter
 from carta import Carta
+import pandas as pd
 
 
 class Jugador:
@@ -256,39 +257,37 @@ class Jugador:
         print("len(mesa):",len(mesa))
         print("len(self.restante):",len(self.restante))
 
-        # Calculamos todas las posbiles manos del rival
-        for i in range(0, len(self.restante) - 1, 1):
-            for j in range(i + 1, len(self.restante), 1):
-                
-                PCartaRival1 = self.restante[i]
-                PCartaRival2 = self.restante[j]
+        if mesa != []:
+        
+            # Calculamos todas las posbiles manos del rival
+            for i in range(0, len(self.restante) - 1, 1):
+                for j in range(i + 1, len(self.restante), 1):
+                    
+                    PCartaRival1 = self.restante[i]
+                    PCartaRival2 = self.restante[j]
 
-                # Quitar las 2 cartas elegidas para el rival del mazo
-                self.restante.remove(PCartaRival1)
-                self.restante.remove(PCartaRival2)
+                    # Quitar las 2 cartas elegidas para el rival del mazo
+                    self.restante.remove(PCartaRival1)
+                    self.restante.remove(PCartaRival2)
+                                                
+                    # Condicion cuando conocomos 3 cartas de la mesa
+                    if len(mesa) == 3:
+                        for a in range(0,len(self.restante)-1,1):
+                            for b in range (a+1,len(self.restante),1):
+                                # Calculamos la combinacion de cartas del rival
+                                Cconocidas = mesa + [self.restante[a],self.restante[b]]
+                                manoRival = self.calcularCombinacion(Cconocidas,[PCartaRival1,PCartaRival2])
+                                manoMia = self.calcularCombinacion(Cconocidas,self.mano)
+                                contadorTotal = contadorTotal + 1
+                                # caso en el que jugador 1 tiene mejor mano que jugador 2
+                                if manosValor[manoMia[0]] > manosValor[manoRival[0]]:
+                                    contadorGanado = contadorGanado + 1
 
-                # Condicion cuando conocomos 0 cartas de la mesa
-                if mesa == []:
-                    for a in range(0,len(self.restante)-4,1):
-                        for b in range (a+1,len(self.restante)-3,1):
-                            for c in range (b+1,len(self.restante)-2,1):
-                                for d in range (c+1,len(self.restante)-1,1):
-                                    for e in range (d+1,len(self.restante),1):
-                                        # Calculamos la combinacion de cartas del rival
-                                        Cconocidas = [self.restante[a],self.restante[b],self.restante[c],self.restante[d],self.restante[e]]
-                                        manoRival = self.calcularCombinacion(Cconocidas,[PCartaRival1,PCartaRival2])
-                                        manoMia = self.calcularCombinacion(Cconocidas,self.mano)
-                                        contadorTotal = contadorTotal + 1
-                                        # caso en el que jugador 1 tiene mejor mano que jugador 2
-                                        if manosValor[manoMia[0]] > manosValor[manoRival[0]]:
-                                            contadorGanado = contadorGanado + 1
-                                            
-                # Condicion cuando conocomos 3 cartas de la mesa
-                if len(mesa) == 3:
-                    for a in range(0,len(self.restante)-1,1):
-                        for b in range (a+1,len(self.restante),1):
+                    # Condicion cuando conocomos 4 cartas de la mesa
+                    if len(mesa) == 4:
+                        for a in range(0,len(self.restante),1):
                             # Calculamos la combinacion de cartas del rival
-                            Cconocidas = mesa + [self.restante[a],self.restante[b]]
+                            Cconocidas = mesa + [self.restante[a]]
                             manoRival = self.calcularCombinacion(Cconocidas,[PCartaRival1,PCartaRival2])
                             manoMia = self.calcularCombinacion(Cconocidas,self.mano)
                             contadorTotal = contadorTotal + 1
@@ -296,11 +295,10 @@ class Jugador:
                             if manosValor[manoMia[0]] > manosValor[manoRival[0]]:
                                 contadorGanado = contadorGanado + 1
 
-                # Condicion cuando conocomos 4 cartas de la mesa
-                if len(mesa) == 4:
-                    for a in range(0,len(self.restante),1):
+                    # Condicion cuando conocomos 5 cartas de la mesa
+                    if len(mesa) == 5:
                         # Calculamos la combinacion de cartas del rival
-                        Cconocidas = mesa + [self.restante[a]]
+                        Cconocidas = mesa
                         manoRival = self.calcularCombinacion(Cconocidas,[PCartaRival1,PCartaRival2])
                         manoMia = self.calcularCombinacion(Cconocidas,self.mano)
                         contadorTotal = contadorTotal + 1
@@ -308,27 +306,39 @@ class Jugador:
                         if manosValor[manoMia[0]] > manosValor[manoRival[0]]:
                             contadorGanado = contadorGanado + 1
 
-                # Condicion cuando conocomos 5 cartas de la mesa
-                if len(mesa) == 5:
-                    # Calculamos la combinacion de cartas del rival
-                    Cconocidas = mesa
-                    manoRival = self.calcularCombinacion(Cconocidas,[PCartaRival1,PCartaRival2])
-                    manoMia = self.calcularCombinacion(Cconocidas,self.mano)
-                    contadorTotal = contadorTotal + 1
-                    # caso en el que jugador 1 tiene mejor mano que jugador 2
-                    if manosValor[manoMia[0]] > manosValor[manoRival[0]]:
-                        contadorGanado = contadorGanado + 1
+                    # Poner las 2 cartas elegidas para el rival de nuevo al mazo
+                    self.restante.insert(i,PCartaRival1)
+                    self.restante.insert(j,PCartaRival2)
 
-                # Poner las 2 cartas elegidas para el rival de nuevo al mazo
-                self.restante.insert(i,PCartaRival1)
-                self.restante.insert(j,PCartaRival2)
+            print("Casos totales :",contadorTotal)
+            print("Casos ganadores :",contadorGanado)
+            print("Probabilidad de ganar con esta mano (",contadorGanado,"/",contadorTotal,"):",contadorGanado/contadorTotal)
 
-        print("Casos totales :",contadorTotal)
-        print("Casos ganadores :",contadorGanado)
-        print("Probabilidad de ganar con esta mano (",contadorGanado,"/",contadorTotal,"):",contadorGanado/contadorTotal)
+        else:
+            
+            # para los casos en que no conocemos cartas en la mesa, leemos un csv con las probabilidades
+            df = pd.read_csv('probabilidadPreFlop.csv',sep=";",names=["1ra. Carta","2da. Carta","palo","probabilidad"])
 
+            # filtrar los datos del dataframe, segun las cartas y si tienen el mismo palo
+            mismaMano = "d"
+            if self.mano[0].returnPalo() == self.mano[1].returnPalo():
+                mismaMano = "m"
+
+            # Ordenamos las cartas que tenemos
+            if self.mano[1].returnTrueValor() > self.mano[0].returnTrueValor():
+                aux = self.mano[0]
+                self.mano[0] = self.mano[1]
+                self.mano[1] = aux
+            
+            dfProbabilidad = df[ (df["1ra. Carta"] == self.mano[0].returnValor()) & (df["2da. Carta"] == self.mano[1].returnValor()) 
+            & (df["palo"] == mismaMano) ]
+            
+            # resultado dfProbabilidad.iloc[0]["probabilidad"]
+            self.mano[0].imprimir()
+            self.mano[1].imprimir()
+            print("Probabilidad de ganar",dfProbabilidad.iloc[0]["probabilidad"])
+            
     # Ordenar las cartas para que sea mas facil determinar las manos
-
     def ordenarMano(self):
         for i in range(0, len(self.cartas) - 1, 1):
             for j in range(i+1, len(self.cartas), 1):
