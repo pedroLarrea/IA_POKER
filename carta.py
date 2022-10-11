@@ -1,5 +1,3 @@
-from sqlalchemy import true
-
 
 class Carta:
 
