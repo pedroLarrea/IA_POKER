@@ -12,13 +12,13 @@ class Mesa:
 
     # Creamos los jugadores y repartimos cartas
     jugador1 = Jugador(
-        [Carta(11, "Corazon"), Carta(12, "Corazon")], mazoOriginal)
+        [Carta(8, "Corazon"), Carta(9, "Corazon")], mazoOriginal)
     jugador2 = Jugador(
         [mazo.obtenerCarta(), mazo.obtenerCarta()], mazoOriginal)
     jugadores = [jugador1, jugador2]
 
 
 
-    jugador1.calcularCombinacion([Carta(10, "Pica"), Carta(10, "Corazon"), Carta(13, "Corazon"), Carta(14, "Diamante"), Carta(14, "Corazon")])
+    jugador1.calcularCombinacion([Carta(3, "Pica"), Carta(4, "Corazon"), Carta(5, "Corazon"), Carta(6, "Diamante"), Carta(7, "Corazon")])
     
 

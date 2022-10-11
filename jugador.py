@@ -120,7 +120,10 @@ class Jugador:
                 
                 if len(esc)==5:    #si es de longitud 5 cumplio y se agrega al conjunto de escaleras colores que se encontraron hasta el momento
                     print('ENCONTRE ESCALERA COLOR')
-                    self.manos['Escalera de Color'].append(esc)
+                    if self.manos['Escalera de Color'] == [[]]:
+                        self.manos['Escalera de Color'] = [esc]
+                    else:
+                        self.manos['Escalera de Color'].insert(0, esc)
                     continue#esto para que no evalue una escalera normal, ya que va a terminar cumpliendo condiciones
                     
                     
@@ -135,8 +138,11 @@ class Jugador:
                         break
                 
                 if len(esc)==5:    #si es de longitud 5 cumplio y se agrega al conjunto de escaleras colores que se encontraron hasta el momento
-                    print('ENCONTRE ESCALERA')
-                    self.manos['Escalera'].append(esc)                  
+                    print('ENCONTRE ESCALERA')     
+                    if self.manos['Escalera'] == [[]]:
+                        self.manos['Escalera'] = [esc]
+                    else:
+                        self.manos['Escalera'].insert(0, esc)             
                                   
         #quito las A's que agregue al final
         contador=0
