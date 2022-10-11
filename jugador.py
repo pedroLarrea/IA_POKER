@@ -192,8 +192,7 @@ class Jugador:
             for i in range(0, len(self.manos['Par'])-1, 1):
                 for j in range(i+1, len(self.manos['Par']), 1):
                     if self.manos['Par'][i][0].valor != self.manos['Par'][j][0].valor:
-                        doblePareja = self.manos['Par'][i] + \
-                            self.manos['Par'][j]
+                        doblePareja = self.manos['Par'][i] + self.manos['Par'][j]
                         if self.manos['Doble Pareja'] == [[]]:
                             self.manos['Doble Pareja'] = [doblePareja]
                         else:
@@ -204,7 +203,7 @@ class Jugador:
             for i in range(0, len(self.manos['Par'])-1, 1):
                 for j in range(0, len(self.manos['Trio'])-1, 1):
                     if self.manos['Par'][i][0].valor != self.manos['Trio'][j][0].valor:
-                        full = self.manos['Trio'][i] + self.manos['Par'][j]
+                        full = self.manos['Trio'][j] + self.manos['Par'][i]
                         if self.manos['Full'] == [[]]:
                             self.manos['Full'] = [full]
                         else:
