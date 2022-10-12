@@ -3,12 +3,13 @@ from carta import Carta
 from jugador import Jugador
 import os
 import time
+import math
 
 class Mesa:
 
     # Creamos mesa
     # Modo = True -> maquina vs jugador    
-    def __init__(self,modo, cantFichas, ciegaGrande):
+    def __init__(self,modo, cantFichas, ciegaGrande, ciegaMenor):
         
         # Fichas disponible para cada jugador
         # [jugador1, jugador2 o usuario]
@@ -17,7 +18,7 @@ class Mesa:
 
         # Eestablecemos la ciega grande y pequeña
         self.ciegaGrande = ciegaGrande
-        self.ciegaPequeña = ciegaGrande / 2
+        self.ciegaPequeña = ciegaMenor
 
         self.jugar()
 
@@ -30,10 +31,10 @@ class Mesa:
             self.mazoOriginal = list(self.mazo.obtenerMazo())
 
             # Creamos los jugadores y repartimos cartas
-            jugador1 = Jugador([self.mazo.obtenerCarta(), self.mazo.obtenerCarta()], self.mazoOriginal)
-            jugador2 = Jugador([self.mazo.obtenerCarta(), self.mazo.obtenerCarta()], self.mazoOriginal)
+            jugador1 = Jugador([self.mazo.obtenerCarta(), self.mazo.obtenerCarta()], list(self.mazoOriginal))
+            jugador2 = Jugador([self.mazo.obtenerCarta(), self.mazo.obtenerCarta()], list(self.mazoOriginal))
             self.jugadores = [jugador1,jugador2]
-
+            
             # Cartas sobre la mesa
             self.mesa = []
             
@@ -50,9 +51,7 @@ class Mesa:
             self.river()
 
             # verificar quien gano la ronda
-            self.verificarGanador()
-
-        
+            self.verificarGanador()        
 
     # momento del juego cuando aun no hay ninguna carta sobre la mesa        
     def preflop(self):
@@ -114,11 +113,12 @@ class Mesa:
 
     # nroJugador ( 0 = jugador1 , 1 = jugador2 o usuario ), cantApuesta = cantidad a apostar
     def apostar(self,nroJugador,cantApuesta):
-        # All in
         if cantApuesta > 0:
+            # si me paso de la cantidad de fichas que tengo, hago un all-in
             if cantApuesta >= self.fichas[nroJugador]:
                 self.apuestas[nroJugador] = self.fichas[nroJugador]
                 self.fichas[nroJugador] = 0
+            # No hago all-in
             else:
                 self.apuestas[nroJugador] += cantApuesta
                 self.fichas[nroJugador] -= cantApuesta
@@ -166,12 +166,25 @@ class Mesa:
                 jugadasJ2 = True
             else:
                 if self.apuestas[0] <= self.apuestas[1] and self.fichas[0] > 0:
-                    # Si no coincide la apuesta hacer call
-                    if self.apuestas[turno] !=  self.apuestas[1]:
-                        self.hacerCall(turno)
+                    
+                    probabilidad = self.jugadores[turno].calcularProbabilidad(self.mesa)
+                    print("Probabilidad de ganar del jugador",turno,":",probabilidad)
+                    
+                    if jugadasJ2:
+
+                        # Si no coincide la apuesta hacer call
+                        if self.apuestas[turno] !=  self.apuestas[1]:
+                            self.hacerCall(turno)
+
+                        # Si coincide la apuesta apostar mas, si la probabilidad > 50% (apuesta 10% )
+                        fichasAApostar = math.ceil(self.fichas[0]*0.1)
+
+                        if self.apuestas[turno] ==  self.apuestas[1] and probabilidad > 50.0:
+                            self.apostar(turno, fichasAApostar)
+                    
                 jugadasJ1 = True
                 
-            # Si ambos jugadores han jugado almenos una ronda y tienen la misma apuesta termina la ronda de apuestas
+            # Si ambos jugadores han jugado al menos una ronda y tienen la misma apuesta termina la ronda de apuestas
             # validar cuando no son apuestas iguales
             if jugadasJ1 == jugadasJ2 and ( (self.apuestas[0] == self.apuestas[1]) or self.fichas[0] == 0 or self.fichas[1] == 0):
                 continuar = False
@@ -225,8 +238,8 @@ class Mesa:
     # Opciones para el usuario durante la partida cuando las apuestas estan igualadas
     def opcionesAccionesCheck(self,nroJugador):
         continuar = True
-        os.system ("cls") 
-        time.sleep(2)
+        # os.system ("cls") 
+        # time.sleep(2)
         #os.system ("clear") Para linux
         self.verManoJugador(1)
         print("==== Acciones ====")
@@ -248,8 +261,8 @@ class Mesa:
     # Opciones para el usuario durante la partida cuando las apuestas no estan igualadas
     def opcionesAccionesCall(self,nroJugador):
         continuar = True
-        os.system ("cls") 
-        time.sleep(2)
+        # os.system ("cls") 
+        # time.sleep(2)
         #os.system ("clear") Para linux
         self.verManoJugador(1)
         print("==== Acciones ====")
@@ -273,12 +286,12 @@ class Mesa:
     def verificarGanador(self):
         if self.apuestas[0] > 0 and self.apuestas[1] > 0:
             print("Mejor mano de jugador 1")
-            manoFinalJ1 = self.jugadores[0].calcularCombinacion(self.mesa)
+            manoFinalJ1 = self.jugadores[0].calcularCombinacion(self.mesa,self.jugadores[0].retornarMano())
             print(manoFinalJ1[0])
             Carta.imprimirLista(manoFinalJ1[1])
 
             print("Mejor mano de jugador 2 o usuario")
-            manoFinalJ2 = self.jugadores[1].calcularCombinacion(self.mesa)
+            manoFinalJ2 = self.jugadores[1].calcularCombinacion(self.mesa,self.jugadores[1].retornarMano())
             print(manoFinalJ2[0])
             Carta.imprimirLista(manoFinalJ2[1])
 

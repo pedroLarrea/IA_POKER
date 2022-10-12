@@ -3,6 +3,7 @@ import itertools
 from collections import Counter
 from tkinter import *
 from PIL import ImageTk, Image  #  only non_standard dependency you need to DL
+from mesa import Mesa
 import threading
 import queue
 import time
@@ -710,10 +711,10 @@ def main():
             left_frame.place(relx=0, rely=0, relwidth=0.5, relheight=1, anchor='nw')
             name_frame = Frame(left_frame, bg="light green", bd=5)
             name_frame.place(relx=0.5, rely=0.17, relwidth=0.9, relheight=0.7, anchor="n")
-            self.entry_p0 = Entry(name_frame, font=("Courier", 12), bd=3)
-            self.entry_p0.place(relwidth=0.5, relheight=0.2)
-            self.entry_p1 = Entry(name_frame, font=("Courier", 12), bd=3)
-            self.entry_p1.place(relx=0.5, rely=0, relwidth=0.5, relheight=0.2)
+            # self.entry_p0 = Entry(name_frame, font=("Courier", 12), bd=3)
+            # self.entry_p0.place(relwidth=0.5, relheight=0.2)
+            # self.entry_p1 = Entry(name_frame, font=("Courier", 12), bd=3)
+            # self.entry_p1.place(relx=0.5, rely=0, relwidth=0.5, relheight=0.2)
             
             # self.entry_p2 = Entry(name_frame, font=("Courier", 12), bd=3)
             # self.entry_p2.place(relx=0, rely=0.2, relwidth=0.5, relheight=0.2)
@@ -753,13 +754,11 @@ def main():
             self.bb_entry = Entry(right_frame, font=("Courier"), bd=3)
             self.bb_entry.place(relx=0.5, rely=0.63, relwidth=0.5, relheight=0.07, anchor="n")
             
-            self.bb_entry.bind("<Return>", lambda _: self.button_click(self.entry_p0.get(), self.entry_p1.get(),
-                                                                       self.sc_entry.get(), self.sb_entry.get(), 
+            self.bb_entry.bind("<Return>", lambda _: self.button_click(self.sc_entry.get(), self.sb_entry.get(), 
                                                                        self.bb_entry.get(), controller))
 
             button = Button(right_frame, text="START", font=("Courier", 12),
-                            command=lambda: self.button_click(self.entry_p0.get(), self.entry_p1.get(), 
-                                                              self.sc_entry.get(), self.sb_entry.get(), 
+                            command=lambda: self.button_click(self.sc_entry.get(), self.sb_entry.get(), 
                                                               self.bb_entry.get(), controller))
             
             # self.bb_entry.bind("<Return>", lambda _: self.button_click(self.entry_p0.get(), self.entry_p1.get(),
@@ -782,7 +781,9 @@ def main():
             
             button.place(relx=0.5, rely=0.9, relwidth=0.3, relheight=0.1, anchor="n")
 
-        def button_click(self, entry0, entry1, entrysc, entrysb, entrybb, controller):
+        def button_click(self, entrysc, entrysb, entrybb, controller):
+            entry0 = "Pedro"
+            entry1 = "Laura"
             entry_list = [entry0, entry1, entrysc, entrysb, entrybb]
         # def button_click(self, entry0, entry1, entry2, entry3, entry4, entry5, entry6, entry7, entry8, entry9, entrysc,
         #                  entrysb, entrybb, controller):
@@ -817,6 +818,7 @@ def main():
                 "chips": chip_entry_list
             }
             response_q.put(setup)
+            # self.juego = Mesa(False,int(chip_entry_list[0]),float(chip_entry_list[2]),float(chip_entry_list[1]))
             game_event.set()
             controller.show_frame(GamePage)
 

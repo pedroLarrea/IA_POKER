@@ -1,28 +1,37 @@
-
 class Carta:
 
     valores = {
-            14 : "A",
-            2 : "2",
-            3 : "3",
-            4 : "4",
-            5 : "5",
-            6 : "6",
-            7 : "7",
-            8 : "8",
-            9 : "9",
-            10 : "10",
-            11 : "J",
-            12 : "Q",
-            13 : "K",
-        }
-    
+        14: "A",
+        2: "2",
+        3: "3",
+        4: "4",
+        5: "5",
+        6: "6",
+        7: "7",
+        8: "8",
+        9: "9",
+        10: "10",
+        11: "J",
+        12: "Q",
+        13: "K",
+        1: "A"
+    }
+
     def __init__(self, valor, palo):
         self.valor = valor
         self.palo = palo
 
     def imprimir(self):
-        print(self.valores[self.valor], "-",self.palo)
+        print(self.valores[self.valor], "-", self.palo)
+
+    def returnValor(self):
+        return self.valores[self.valor]
+    
+    def returnTrueValor(self):
+        return self.valor
+    
+    def returnPalo(self):
+        return self.palo
 
     def imprimirLista(listaCartas):
         if listaCartas != []:
