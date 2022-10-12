@@ -172,15 +172,42 @@ class Mesa:
                     
                     if jugadasJ2:
 
-                        # Si no coincide la apuesta hacer call
+                        # Si no coincide la apuesta
                         if self.apuestas[turno] !=  self.apuestas[1]:
-                            self.hacerCall(turno)
 
-                        # Si coincide la apuesta apostar mas, si la probabilidad > 50% (apuesta 10% )
-                        fichasAApostar = math.ceil(self.fichas[0]*0.1)
+                            # Si la apuestas del usuario es mayor que la del bot
+                            
+                            # Si la probabilidad > 70% (apuesta SUBE 25% )
+                            if probabilidad > 70.0:
+                                self.hacerCall(turno)
+                                fichasAApostar = math.ceil(self.fichas[0]*0.25)
+                                self.apostar(turno, fichasAApostar)
+                            # Si la probabilidad > 50% (apuesta SUBE 10% )
+                            elif probabilidad > 50.0:
+                                self.hacerCall(turno)
+                                fichasAApostar = math.ceil(self.fichas[0]*0.1)
+                                self.apostar(turno, fichasAApostar)
+                            # Si la probabilidad >= 30% ( solo hacer call )
+                            elif probabilidad >= 30.0: 
+                                self.hacerCall(turno)
+                            # Si la apuestas del usuario es mayor que la del bot y la probabilidad es menor a 0
+                            else:
+                                self.hacerFold(turno)
 
-                        if self.apuestas[turno] ==  self.apuestas[1] and probabilidad > 50.0:
-                            self.apostar(turno, fichasAApostar)
+                        # Si coincide la apuesta
+                        else:
+                            
+                            # Apostar mas, si la probabilidad > 70% (apuesta SUBE 25% )
+                            if self.apuestas[turno] ==  self.apuestas[1] and probabilidad > 75.0:
+                                fichasAApostar = math.ceil(self.fichas[0]*0.25)
+                                self.apostar(turno, fichasAApostar)
+                            
+                            # Apostar mas, si la probabilidad > 50% (apuesta SUBE 10% )
+                            elif self.apuestas[turno] ==  self.apuestas[1] and probabilidad > 50.0:
+                                fichasAApostar = math.ceil(self.fichas[0]*0.1)
+                                self.apostar(turno, fichasAApostar)
+
+                            # Si no entra en ningun if es un check(Pasar)
                     
                 jugadasJ1 = True
                 

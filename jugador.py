@@ -252,11 +252,6 @@ class Jugador:
             if carta in self.restante:
                 self.restante.remove(carta)
 
-
-        print("Ejecutando calcularProbabilidad...")
-        print("len(mesa):",len(mesa))
-        print("len(self.restante):",len(self.restante))
-
         if mesa != []:
         
             # Calculamos todas las posbiles manos del rival
@@ -310,10 +305,6 @@ class Jugador:
                     # Poner las 2 cartas elegidas para el rival de nuevo al mazo
                     self.restante.insert(i,PCartaRival1)
                     self.restante.insert(j,PCartaRival2)
-
-            print("Casos totales :",contadorTotal)
-            print("Casos ganadores :",contadorGanado)
-            print("Probabilidad de ganar con esta mano (",contadorGanado,"/",contadorTotal,"):",contadorGanado/contadorTotal)
 
             return (contadorGanado/contadorTotal)*100
 
