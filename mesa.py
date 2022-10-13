@@ -11,6 +11,8 @@ class Mesa:
     # Modo = True -> maquina vs jugador    
     def __init__(self,modo, cantFichas, ciegaGrande, ciegaMenor):
         
+        self.modoJuego = modo
+
         # Fichas disponible para cada jugador
         # [jugador1, jugador2 o usuario]
         self.fichas = [cantFichas,cantFichas]
@@ -25,15 +27,24 @@ class Mesa:
     # jugar siempre que ambos jugadores puedan seguir apostando
     def jugar(self):
 
+        print("================ INICIANDO EL JUEGO ================")
+        
         while self.fichas[0] > 0 and self.fichas[1] > 0:
+            print("Iniciando Ronda")
             # Creamos el mazo para jugar
             self.mazo = Mazo()
             self.mazoOriginal = list(self.mazo.obtenerMazo())
 
             # Creamos los jugadores y repartimos cartas
+            print("Repartiendo cartas...")
             jugador1 = Jugador([self.mazo.obtenerCarta(), self.mazo.obtenerCarta()], list(self.mazoOriginal))
             jugador2 = Jugador([self.mazo.obtenerCarta(), self.mazo.obtenerCarta()], list(self.mazoOriginal))
             self.jugadores = [jugador1,jugador2]
+
+            print("Cartas del jugador 1")
+            jugador1.verMano()
+            print("Cartas del jugador 2")
+            jugador2.verMano()
             
             # Cartas sobre la mesa
             self.mesa = []
@@ -55,10 +66,14 @@ class Mesa:
 
     # momento del juego cuando aun no hay ninguna carta sobre la mesa        
     def preflop(self):
+        print("=== Iniciando el preflop ===")
+
         # Ciega Grande
+        print("Apuesta grande")
         self.apostar(0, self.ciegaGrande)
         
         # Ciega Pequeña
+        print("Apuesta pequeña")
         self.apostar(1, self.ciegaPequeña)
 
         # Variable para saber el turno de quien es ( 0 = jugador1 , 1 = jugador2 o usuario )
@@ -67,13 +82,17 @@ class Mesa:
         # empezar ronda de apuestas
         self.rondaDeApuestas(turno)
 
-        print("Fin del preflop")
+        print("=== Fin del preflop ===")
     
     # momento del juego cuando ya hay 3 cartas sobre la mesa        
     def flop(self):
         if self.apuestas[0] > 0 and self.apuestas[1] > 0:
+            print("=== Iniciando el flop ===")
+            
             # Cartas sobre la mesa
+            print("Cartas sobre la mesa")
             self.mesa = [self.mazo.obtenerCarta(),self.mazo.obtenerCarta(),self.mazo.obtenerCarta()]
+            Carta.imprimirLista(self.mesa)
             
             # Variable para saber el turno de quien es ( 0 = jugador1 , 1 = jugador2 o usuario )
             turno = 1
@@ -81,13 +100,17 @@ class Mesa:
             # empezar ronda de apuestas
             self.rondaDeApuestas(turno)
 
-            print("Fin del flop")
+            print("=== Fin del flop")
     
     # momento del juego cuando ya hay 4 cartas sobre la mesa        
     def turn(self):
         if self.apuestas[0] > 0 and self.apuestas[1] > 0:
+            print("=== Iniciando el turn ===")
+            
             # Cartas sobre la mesa
+            print("Cartas sobre la mesa")
             self.mesa.append(self.mazo.obtenerCarta())
+            Carta.imprimirLista(self.mesa)
             
             # Variable para saber el turno de quien es ( 0 = jugador1 , 1 = jugador2 o usuario )
             turno = 1
@@ -95,13 +118,17 @@ class Mesa:
             # empezar ronda de apuestas
             self.rondaDeApuestas(turno)
 
-            print("Fin del turn")
+            print("=== Fin del turn ===")
     
     # momento del juego cuando ya hay 5 cartas sobre la mesa        
     def river(self):
         if self.apuestas[0] > 0 and self.apuestas[1] > 0:
+            print("=== Iniciando el river ===")
+
             # Cartas sobre la mesa
+            print("Cartas sobre la mesa")
             self.mesa.append(self.mazo.obtenerCarta())
+            Carta.imprimirLista(self.mesa)
             
             # Variable para saber el turno de quien es ( 0 = jugador1 , 1 = jugador2 o usuario )
             turno = 1
@@ -109,7 +136,7 @@ class Mesa:
             # empezar ronda de apuestas
             self.rondaDeApuestas(turno)
 
-            print("Fin del river")
+            print("=== Fin del river ===")
 
     # nroJugador ( 0 = jugador1 , 1 = jugador2 o usuario ), cantApuesta = cantidad a apostar
     def apostar(self,nroJugador,cantApuesta):
@@ -118,10 +145,12 @@ class Mesa:
             if cantApuesta >= self.fichas[nroJugador]:
                 self.apuestas[nroJugador] = self.fichas[nroJugador]
                 self.fichas[nroJugador] = 0
+                print("<Jugador",nroJugador,"> realiza un all-in")
             # No hago all-in
             else:
                 self.apuestas[nroJugador] += cantApuesta
                 self.fichas[nroJugador] -= cantApuesta
+                print("<Jugador",nroJugador,"> apuesta",cantApuesta,"fichas")
    
     # Ver la mesa actual, mano de los jugadores y apuestas de los mismos
     def verMesa(self):
@@ -149,14 +178,21 @@ class Mesa:
         print("* Cartas sobre la mesa:")
         Carta.imprimirLista(self.mesa)
 
-    # Por ahora la maquina siempre pasa(check) o iguala la apuesta(call)
-    # mostrar opciones para el jugador siempre que tenga fichas
+    # jugar ronda de apuestas
     def rondaDeApuestas(self, turno):
+        if self.modoJuego:
+            self.apuestasModo1(turno)
+        else:
+            self.apuestasModo2(turno)
+
+    # ronda de apuestas cuando es jugador vs bot
+    def apuestasModo1(self,turno):
         continuar = True
         jugadasJ1 = jugadasJ2 = False
         
         # self.apuestas[0] > 0 and self.apuestas[1] > 0 -> si alguien no tiene apuestas significa que se retiro de la mesa
         # self.fichas[0] == 0 or self.fichas[1] == 0 -> significa que alguien esta en all-in
+        probabilidad = -1
         while(continuar and self.apuestas[0] > 0 and self.apuestas[1] > 0):
 
             # Si turno = 1 juega el usuario, si turno = 0 juega la maquina
@@ -167,7 +203,8 @@ class Mesa:
             else:
                 if self.apuestas[0] <= self.apuestas[1] and self.fichas[0] > 0:
                     
-                    probabilidad = self.jugadores[turno].calcularProbabilidad(self.mesa)
+                    if probabilidad == -1:
+                        probabilidad = self.jugadores[turno].calcularProbabilidad(self.mesa)
                     print("Probabilidad de ganar del jugador",turno,":",probabilidad)
                     
                     if jugadasJ2:
@@ -180,12 +217,12 @@ class Mesa:
                             # Si la probabilidad > 70% (apuesta SUBE 25% )
                             if probabilidad > 70.0:
                                 self.hacerCall(turno)
-                                fichasAApostar = math.ceil(self.fichas[0]*0.25)
+                                fichasAApostar = math.ceil(self.fichas[turno]*0.25)
                                 self.apostar(turno, fichasAApostar)
                             # Si la probabilidad > 50% (apuesta SUBE 10% )
                             elif probabilidad > 50.0:
                                 self.hacerCall(turno)
-                                fichasAApostar = math.ceil(self.fichas[0]*0.1)
+                                fichasAApostar = math.ceil(self.fichas[turno]*0.1)
                                 self.apostar(turno, fichasAApostar)
                             # Si la probabilidad >= 30% ( solo hacer call )
                             elif probabilidad >= 30.0: 
@@ -198,13 +235,13 @@ class Mesa:
                         else:
                             
                             # Apostar mas, si la probabilidad > 70% (apuesta SUBE 25% )
-                            if self.apuestas[turno] ==  self.apuestas[1] and probabilidad > 75.0:
-                                fichasAApostar = math.ceil(self.fichas[0]*0.25)
+                            if  probabilidad > 75.0:
+                                fichasAApostar = math.ceil(self.fichas[turno]*0.25)
                                 self.apostar(turno, fichasAApostar)
                             
                             # Apostar mas, si la probabilidad > 50% (apuesta SUBE 10% )
-                            elif self.apuestas[turno] ==  self.apuestas[1] and probabilidad > 50.0:
-                                fichasAApostar = math.ceil(self.fichas[0]*0.1)
+                            elif probabilidad > 50.0:
+                                fichasAApostar = math.ceil(self.fichas[turno]*0.1)
                                 self.apostar(turno, fichasAApostar)
 
                             # Si no entra en ningun if es un check(Pasar)
@@ -220,7 +257,149 @@ class Mesa:
             if turno == 0:
                 turno = 1
             else:
-                turno = 0                                   
+                turno = 0
+
+    # ronda de apuestas cuando es bot vs bot
+    def apuestasModo2(self,turno):
+        continuar = True
+        jugadasJ1 = jugadasJ2 = False
+        
+        # self.apuestas[0] > 0 and self.apuestas[1] > 0 -> si alguien no tiene apuestas significa que se retiro de la mesa
+        # self.fichas[0] == 0 or self.fichas[1] == 0 -> significa que alguien esta en all-in
+        probabilidad1 = -1
+        probabilidad0 = -1
+        while(continuar and self.apuestas[0] > 0 and self.apuestas[1] > 0):
+
+            # Si turno = 1 juega jugador 2
+            if turno == 1:
+                if self.apuestas[1] <= self.apuestas[0] and self.fichas[1] > 0:
+                    
+                    print("<Jugador",turno,"> Calculando probabilidad...")
+                    if probabilidad1 == -1:
+                        probabilidad1 = self.jugadores[turno].calcularProbabilidad(self.mesa)
+                    print("<Jugador",turno,"> Tiene",probabilidad1,"%","de ganar")
+                    
+                    
+
+                    # Si no coincide la apuesta
+                    if self.apuestas[turno] !=  self.apuestas[0]:
+
+                        # Si la apuestas del usuario es mayor que la del bot
+                            
+                        # Si la probabilidad > 70% (apuesta SUBE 25% )
+                        if probabilidad1 > 70.0:
+                            print("<Jugador",turno,"> realiza Call y Raise")
+                            self.hacerCall(turno)
+                            fichasAApostar = math.ceil(self.fichas[turno]*0.25)
+                            self.apostar(turno, fichasAApostar)
+                            
+                        # Si la probabilidad > 50% (apuesta SUBE 10% )
+                        elif probabilidad1 > 50.0:
+                            print("<Jugador",turno,"> realiza Call y Raise")
+                            self.hacerCall(turno)
+                            fichasAApostar = math.ceil(self.fichas[turno]*0.1)
+                            self.apostar(turno, fichasAApostar)
+                        # Si la probabilidad >= 30% ( solo hacer call )
+                        elif probabilidad1 >= 30.0: 
+                            print("<Jugador",turno,"> realiza Call")
+                            self.hacerCall(turno)
+                        # Si la apuestas del usuario es mayor que la del bot y la probabilidad es menor a 30
+                        else:
+                            print("<Jugador",turno,"> se retira")
+                            self.hacerFold(turno)
+                            
+
+                    # Si coincide la apuesta
+                    else:
+                            
+                        # Apostar mas, si la probabilidad > 70% (apuesta SUBE 25% )
+                        if probabilidad1 > 75.0:
+                            print("<Jugador",turno,"> realiza Raise")
+                            fichasAApostar = math.ceil(self.fichas[turno]*0.25)
+                            self.apostar(turno, fichasAApostar)
+                            
+                            
+                        # Apostar mas, si la probabilidad > 50% (apuesta SUBE 10% )
+                        elif probabilidad1 > 50.0:
+                            print("<Jugador",turno,"> realiza Raise")
+                            fichasAApostar = math.ceil(self.fichas[turno]*0.1)
+                            self.apostar(turno, fichasAApostar)
+                        else:
+                            print("<Jugador",turno,"> realiza check")
+
+                        # Si no entra en ningun if es un check(Pasar)
+
+                jugadasJ2 = True
+            
+            # Juega jugador 1
+            else:
+                if self.apuestas[0] <= self.apuestas[1] and self.fichas[0] > 0:
+                    
+                    print("<Jugador",turno,"> Calculando probabilidad...")
+                    if probabilidad0 == -1:
+                        probabilidad0 = self.jugadores[turno].calcularProbabilidad(self.mesa)
+                    print("<Jugador",turno,"> Tiene",probabilidad0,"%","de ganar")
+                    
+                    if jugadasJ2:
+
+                        # Si no coincide la apuesta
+                        if self.apuestas[turno] !=  self.apuestas[1]:
+
+                            # Si la apuestas del usuario es mayor que la del bot
+                            
+                            # Si la probabilidad > 70% (apuesta SUBE 25% )
+                            if probabilidad0 > 70.0:
+                                print("<Jugador",turno,"> realiza Call y Raise")
+                                self.hacerCall(turno)
+                                fichasAApostar = math.ceil(self.fichas[turno]*0.25)
+                                self.apostar(turno, fichasAApostar)
+                            # Si la probabilidad > 50% (apuesta SUBE 10% )
+                            elif probabilidad0 > 50.0:
+                                print("<Jugador",turno,"> realiza Call y Raise")
+                                self.hacerCall(turno)
+                                fichasAApostar = math.ceil(self.fichas[turno]*0.1)
+                                self.apostar(turno, fichasAApostar)
+                                
+                            # Si la probabilidad >= 30% ( solo hacer call )
+                            elif probabilidad0 >= 30.0: 
+                                print("<Jugador",turno,"> realiza Call")
+                                self.hacerCall(turno)
+                            # Si la apuestas del usuario es mayor que la del bot y la probabilidad es menor a 30
+                            else:
+                                print("<Jugador",turno,"> se retira")
+                                self.hacerFold(turno)
+
+                        # Si coincide la apuesta
+                        else:
+                            
+                            # Apostar mas, si la probabilidad > 70% (apuesta SUBE 25% )
+                            if probabilidad0 > 75.0:
+                                print("<Jugador",turno,"> realiza Raise")
+                                fichasAApostar = math.ceil(self.fichas[turno]*0.25)
+                                self.apostar(turno, fichasAApostar)
+                            
+                            # Apostar mas, si la probabilidad > 50% (apuesta SUBE 10% )
+                            elif probabilidad0 > 50.0:
+                                print("<Jugador",turno,"> realiza Raise")
+                                fichasAApostar = math.ceil(self.fichas[turno]*0.1)
+                                self.apostar(turno, fichasAApostar)
+                            else:
+                                print("<Jugador",turno,"> realiza check")
+
+                            # Si no entra en ningun if es un check(Pasar)
+                    
+                jugadasJ1 = True
+                
+            # Si ambos jugadores han jugado al menos una ronda y tienen la misma apuesta termina la ronda de apuestas
+            # validar cuando no son apuestas iguales
+            if jugadasJ1 == jugadasJ2 and ( (self.apuestas[0] == self.apuestas[1]) or self.fichas[0] == 0 or self.fichas[1] == 0):
+                continuar = False
+
+            # Para cambiar el turno
+            if turno == 0:
+                turno = 1
+            else:
+                turno = 0
 
     # Para que el jugador haga un call
     def hacerCall(self,nroJugador):
@@ -250,8 +429,7 @@ class Mesa:
         totalApuesta = self.apuestas[0] + self.apuestas[1]
         self.fichas[contrincante] += totalApuesta
         self.apuestas[0] = self.apuestas[1] = 0
-
-        print("Jugador ",nroJugador+1,"se ha retirado")
+        print("<Jugador",nroJugador,"> se ha retirado")
 
     # Opciones para el usuario durante la partida
     def opcionesAcciones(self, nroJugador):
@@ -265,8 +443,8 @@ class Mesa:
     # Opciones para el usuario durante la partida cuando las apuestas estan igualadas
     def opcionesAccionesCheck(self,nroJugador):
         continuar = True
-        # os.system ("cls") 
-        # time.sleep(2)
+        os.system ("cls") 
+        time.sleep(2)
         #os.system ("clear") Para linux
         self.verManoJugador(1)
         print("==== Acciones ====")
@@ -288,8 +466,8 @@ class Mesa:
     # Opciones para el usuario durante la partida cuando las apuestas no estan igualadas
     def opcionesAccionesCall(self,nroJugador):
         continuar = True
-        # os.system ("cls") 
-        # time.sleep(2)
+        os.system ("cls") 
+        time.sleep(2)
         #os.system ("clear") Para linux
         self.verManoJugador(1)
         print("==== Acciones ====")

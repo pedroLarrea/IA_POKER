@@ -328,8 +328,8 @@ class Jugador:
             & (df["palo"] == mismaMano) ]
             
             # resultado dfProbabilidad.iloc[0]["probabilidad"]
-            self.mano[0].imprimir()
-            self.mano[1].imprimir()
+            # self.mano[0].imprimir()
+            # self.mano[1].imprimir()
 
             return dfProbabilidad.iloc[0]["probabilidad"]
             
